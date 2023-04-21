@@ -1,0 +1,9 @@
+{"buyOrders": [], "sellOrders": [{"id": 1, "price": 100, "quantity": 100}]}
+{"buyOrders": [], "sellOrders": [{"id": 1, "price": 100, "quantity": 100}, {"id": 2, "price": 100, "quantity": 100}]}
+{"buyOrders": [], "sellOrders": [{"id": 1, "price": 100, "quantity": 100}, {"id": 2, "price": 100, "quantity": 100}, {"id": 3, "price": 100, "quantity": 100}]}
+{"buyOrders": [], "sellOrders": [{"id": 3, "price": 100, "quantity": 100}, {"id": 2, "price": 100, "quantity": 100}]}
+{"buyOrderId": 4, "price": 100, "quantity": 100, "sellOrderId": 1}
+{"buyOrderId": 4, "price": 100, "quantity": 100, "sellOrderId": 2}
+{"buyOrderId": 4, "price": 100, "quantity": 100, "sellOrderId": 3}
+{"buyOrderId": 4, "price": 100, "quantity": 100, "sellOrderId": 1}
+{"buyOrderId": 4, "price": 100, "quantity": 100, "sellOrderId": 2}

@@ -1,0 +1,6 @@
+{"type": "Limit", "order":   {"direction": "Sell", "id": 1, "price": 101, "quantity": 20000 }}
+{"type": "Limit", "order":   {"direction": "Buy",  "id": 2, "price": 99,  "quantity": 50000 }}
+{"type": "Limit", "order":   {"direction": "Sell", "id": 3, "price": 100, "quantity": 10000 }}
+{"type": "Limit", "order":   {"direction": "Sell", "id": 4, "price": 100, "quantity": 7500  }}
+{"type": "Limit", "order":   {"direction": "Buy",  "id": 5, "price": 98,  "quantity": 25000 }}
+{"type": "Iceberg", "order": {"direction": "Buy",  "id": 6, "price": 100, "quantity": 25000, "peak": 10000 }}

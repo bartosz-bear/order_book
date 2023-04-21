@@ -1,0 +1,11 @@
+{"sellOrders": [{"id": 1, "price": 101, "quantity": 20000}], "buyOrders": []}
+{"sellOrders": [{"id": 1, "price": 101, "quantity": 20000}], "buyOrders": [{"id": 2, "price": 99, "quantity": 50000}]}
+{"sellOrders": [{"id": 3, "price": 100, "quantity": 10000}, {"id": 1, "price": 101, "quantity": 20000}], "buyOrders": [{"id": 2, "price": 99, "quantity": 50000}]}
+{"sellOrders": [{"id": 3, "price": 100, "quantity": 10000}, {"id": 4, "price": 100, "quantity": 7500}, {"id": 1, "price": 101, "quantity": 20000}], "buyOrders": [{"id": 2, "price": 99, "quantity": 50000}]}
+{"sellOrders": [{"id": 3, "price": 100, "quantity": 10000}, {"id": 4, "price": 100, "quantity": 7500}, {"id": 1, "price": 101, "quantity": 20000}], "buyOrders": [{"id": 2, "price": 99, "quantity": 50000}, {"id": 5, "price": 98, "quantity": 25000}]}
+{"sellOrders": [{"id": 1, "price": 101, "quantity": 20000}], "buyOrders": [{"id": 6, "price": 100, "quantity": 10000}, {"id": 2, "price": 99, "quantity": 50000}, {"id": 5, "price": 98, "quantity": 25500}]}
+{"buyOrderId": 6, "price": 100, "quantity": 10000, "sellOrderId": 3}
+{"buyOrderId": 6, "price": 100, "quantity": 7500, "sellOrderId": 4}
+# w linii 6 wchodzi agresywny Iceberg i zjada wszystkie sell po cenie 100 i ustawia się teraz z maksymalnym peakiem
+## jeżeli w linii 6 quantity=2500 zamiast 10000 to znaczy, że agresywny iceberg zachowuje sie jak pasywny
+## jeżeli w linii 6 quantity=7500 zamiast 10000 to znaczy, że agresywny iceberg po "przejściu przez wszystkie transakcje" (czyli relaksacji) nie ustawia sobie maksymalnego quantity

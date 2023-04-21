@@ -1,0 +1,7 @@
+## jeżeli wszędzie quantity=1, to agressive iceberg uwzględnia swój peak. Niezgodne z _emulowanym aktywnym czekaniem_ (czyli optymalnym rozwiązaniem) oraz ujawnia peak.
+{"buyOrders": [{"id": 1, "price": 15, "quantity": 2}], "sellOrders": []}
+{"buyOrders": [{"id": 1, "price": 15, "quantity": 2}, {"id": 2, "price": 15, "quantity": 200}], "sellOrders": []}
+{"buyOrders": [{"id": 1, "price": 15, "quantity": 2}, {"id": 2, "price": 15, "quantity": 200}, {"id": 3, "price": 15, "quantity": 2}], "sellOrders": []}
+{"buyOrders": [{"id": 3, "price": 15, "quantity": 2}, {"id": 1, "price": 15, "quantity": 2}, {"id": 2, "price": 15, "quantity": 192}], "sellOrders": []}
+{"sellOrderId": 4, "buyOrderId": 1, "price": 15, "quantity": 2}
+{"sellOrderId": 4, "buyOrderId": 2, "price": 15, "quantity": 8}
