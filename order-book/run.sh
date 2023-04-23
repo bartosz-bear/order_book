@@ -8,13 +8,12 @@
 
 # The trivial way to pass provided tests (test1 in this case) is to just print your expected solution 
 # but of course you should execute your code here.
-cat <<EOF
-{"buyOrders": [{"id":1, "price": 14, "quantity": 20}], "sellOrders": []}
-{"buyOrders": [{"id": 2, "price": 15, "quantity": 20}, {"id": 1, "price": 14, "quantity": 20}], "sellOrders": []}
-{"buyOrders": [{"id": 2, "price": 15, "quantity": 20}, {"id": 1, "price": 14, "quantity": 20}], "sellOrders": [{"id": 3, "price": 16, "quantity": 15}]}
-{"buyOrders": [{"id": 1, "price": 14, "quantity": 10}], "sellOrders": [{"id": 3, "price": 16, "quantity": 15}]}
-{"buyOrderId": 2, "sellOrderId": 4, "price": 15, "quantity": 20}
-{"buyOrderId": 2, "sellOrderId": 4, "price": 15, "quantity": 20}
-{"buyOrderId": 2, "sellOrderId": 4, "price": 15, "quantity": 10}
-{"buyOrderId": 1, "sellOrderId": 4, "price": 14, "quantity": 10}
+
+# MY SOLUTION
+
+python solution.py <&0 cat <<EOF
+{"type": "Iceberg", "order": {"direction": "Buy", "id": 1, "price": 15, "quantity": 20, "peak": 2}}
+{"type": "Limit", "order": {"direction": "Buy", "id": 2, "price": 15, "quantity": 200}}
+{"type": "Iceberg", "order": {"direction": "Buy", "id": 3, "price": 15, "quantity": 20, "peak": 2}}
+{"type": "Iceberg", "order": {"direction": "Sell", "id": 4, "price": 15, "quantity": 10, "peak": 1}}
 EOF
