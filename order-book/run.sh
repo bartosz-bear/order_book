@@ -12,8 +12,14 @@
 # MY SOLUTION
 
 python solution.py <&0 cat <<EOF
-{"type": "Iceberg", "order": {"direction": "Buy", "id": 1, "price": 15, "quantity": 20, "peak": 2}}
-{"type": "Limit", "order": {"direction": "Buy", "id": 2, "price": 15, "quantity": 200}}
-{"type": "Iceberg", "order": {"direction": "Buy", "id": 3, "price": 15, "quantity": 20, "peak": 2}}
-{"type": "Iceberg", "order": {"direction": "Sell", "id": 4, "price": 15, "quantity": 10, "peak": 1}}
+{"type":"Limit","order":{"direction":"Sell","id":1,"price":101,"quantity":20000}}
+{"type":"Limit","order":{"direction":"Buy","id":2,"price":99,"quantity":50000}}
+{"type":"Limit","order":{"direction":"Sell","id":3,"price":100,"quantity":10000}}
+{"type":"Limit","order":{"direction":"Sell","id":4,"price":100,"quantity":7500}}
+{"type":"Limit","order":{"direction":"Buy","id":5,"price":98,"quantity":25500}}
+{"type":"Iceberg","order":{"direction":"Buy","id":6,"price":100,"quantity":100000,"peak":10000}}
+{"type":"Limit","order":{"direction":"Sell","id":7,"price":100,"quantity":10000}}
+{"type":"Limit","order":{"direction":"Sell","id":8,"price":100,"quantity":11000}}
+{"type":"Iceberg","order":{"direction":"Buy","id":9,"price":100,"quantity":50000,"peak":20000}}
+{"type":"Limit","order":{"direction":"Sell","id":10,"price":100,"quantity":35000}}
 EOF

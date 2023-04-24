@@ -157,15 +157,24 @@ class OrderBook():
 					
 					# STDOUT: Log succesful filling of the incoming limit order
 					order['order']['quantity'] = order['order']['quantity'] - order_book[0].quantity
+					
 					# !!! POSSIBLE ERROR HERE WITH THE ORDER OF EXECUTION
 					order_book.pop(0)
 					self.parse_order(order)
 
-				# Incoming order's quantity is lower than existing order quantity
+				# Incoming order's quantity is equal or lower than existing order quantity
 				else:
 					print('CASE 1. PATH B')
+					print('INCOMING ORDER QUANTITY', order['order']['quantity'])
+					print('EXISTING ORDER QUANTITY', order_book[0].quantity)
+					print({'BuyOrderId': order_book[0].id,
+	    				  'SellOrderId': order['order']['id'],
+						  'price': order_book[0].price,
+						  'quantity': order['order']['quantity'] })
 					order_book[0].quantity = order_book[0].quantity - order['order']['quantity']
 					order['order']['quantity'] = 0
+					if order_book[0].quantity == 0:
+						order_book.pop(0)
 					return
 					# STDOUT: Log succesful filling of the incoming limit order
 			else:
@@ -179,22 +188,74 @@ class OrderBook():
 						#current_peak = order_book[0].peak
 						# STDOUT: Log succesful filling of the incoming limit order
 						#order_book[0].peak = min(order_book[0].quantity, order_book[0].peak)
+						print({'BuyOrderId': order_book[0].id,
+	    				  'SellOrderId': order['order']['id'],
+						  'price': order_book[0].price,
+						  'quantity': matched_quantity })
 						order['order']['quantity'] = order['order']['quantity'] - matched_quantity
 						# !!! POSSIBLE ERROR HERE WITH THE ORDER OF EXECUTION
 						order_book[0].quantity = order_book[0].quantity - matched_quantity
+						order_book[0].entry_time = datetime.now()
+						self.reorder(order_book[0].direction)
 					else:
 						order_book.pop(0)
 
 					self.parse_order(order)
 
-				# Incoming order's quantity is lower than existing order quantity
+				# Incoming order's quantity is lower or equal than existing order quantity
 				else:
+					#if order_book[0].peak == 0:
+					#	order_book[0].peak = min(order_book[0].default_peak, order_book[0].quantity)
+					matched_quantity = min(order_book[0].peak,
+										   order['order']['quantity'])
 					print('CASE 4. PATH B')
-					order_book[0].quantity = order_book[0].quantity - order['order']['quantity']
-					order['order']['quantity'] = 0
+					print('PEAK', order_book[0].peak)
+					print('INCOMING ORDER QUANTITY', order['order']['quantity'])
+					print('EXISTING ORDER QUANTITY', order_book[0].quantity)
+					print({'BuyOrderId': order_book[0].id,
+	    				  'SellOrderId': order['order']['id'],
+						  'price': order_book[0].price,
+						  'quantity': matched_quantity })
+					
+					if order['order']['quantity'] < order_book[0].peak:
+						order_book[0].peak = order_book[0].peak - matched_quantity
+						#order_book[0].quantity = order_book[0].peak - order['order']['quantity']
+					else:
+						order_book[0].quantity = order_book[0].quantity - matched_quantity
+						order_book[0].peak = order_book[0].peak - matched_quantity
+						print('PEEEEEEEEEK', order_book[0].peak)
+					order_book[0].entry_time = datetime.now()
+
+					order['order']['quantity'] = order['order']['quantity'] - matched_quantity
+					if order['order']['quantity'] == 0:
+						#self.reorder(order_book[0].direction)
+						if order_book[0].peak == 0:
+							order_book[0].peak = min(order_book[0].default_peak, order_book[0].quantity)
+					
+						return
+					else:
+						if order_book[0].quantity < order_book[0].peak:
+							order_book[0].peak = order_book[0].quantity
+						if order_book[0].peak == 0:
+							order_book[0].peak = min(order_book[0].default_peak, order_book[0].quantity)
+					
+						self.reorder(order_book[0].direction)
+						self.parse_order(order)
+
+					#print('MAAAAAAAAAAAAAAA', matched_quantity)
+					#order['order']['quantity'] = order['order']['quantity'] - matched_quantity
+					#if order['order']['quantity'] < order_book[0].peak:
+					#	order_book[0].peak = order_book[0].peak - matched_quantity
+					#else:
+					#	order_book[0].quantity = order_book[0].quantity - matched_quantity
+					#	order_book[0].entry_time = datetime.now()
+					#The following line worked
+					#order_book[0].quantity = order_book[0].quantity - order['order']['quantity']
+					
+					
+					#order['order']['quantity'] = 0
+					
 					# STDOUT: Log succesful filling of the incoming limit order
-
-
 		else:
 			## CASE 2 AND 3: Matching incoming limit or iceberg order with existing iceberg order
 			# Incoming order's quantity is higher or equal than existing order quantity
@@ -216,6 +277,10 @@ class OrderBook():
 						#current_peak = order_book[0].peak
 						# STDOUT: Log succesful filling of the incoming limit order
 						#order_book[0].peak = min(order_book[0].quantity, order_book[0].peak)
+						print({'BuyOrderId': order_book[0].id,
+	    				  'SellOrderId': order['order']['id'],
+						  'price': order_book[0].price,
+						  'quantity': matched_quantity })
 						order['order']['quantity'] = order['order']['quantity'] - matched_quantity
 						# !!! POSSIBLE ERROR HERE WITH THE ORDER OF EXECUTION
 						order_book[0].quantity = order_book[0].quantity - matched_quantity
@@ -232,6 +297,10 @@ class OrderBook():
 				else:
 					print('CASE 2 MATCHING LIMIT. PATH B')
 					print("Incoming order's quantity is LOWER or equal than existing order quantity")
+					print({'BuyOrderId': order_book[0].id,
+	    				  'SellOrderId': order['order']['id'],
+						  'price': order_book[0].price,
+						  'quantity': order['order']['quantity'] })
 					order_book[0].quantity = order_book[0].quantity - order['order']['quantity']
 					order_book[0].entry_time = datetime.now()
 					order['order']['quantity'] = 0
@@ -249,23 +318,37 @@ class OrderBook():
 						#current_peak = order_book[0].peak
 						# STDOUT: Log succesful filling of the incoming limit order
 						#order_book[0].peak = min(order_book[0].quantity, order_book[0].peak)
+						print({'BuyOrderId': order_book[0].id,
+	    				  'SellOrderId': order['order']['id'],
+						  'price': order_book[0].price,
+						  'quantity': matched_quantity })
 						order['order']['quantity'] = order['order']['quantity'] - matched_quantity
 						# !!! POSSIBLE ERROR HERE WITH THE ORDER OF EXECUTION
 						order_book[0].quantity = order_book[0].quantity - matched_quantity
 						order_book[0].entry_time = datetime.now()
+						if order_book[0].quantity == 0:
+							order_book.pop(0)
 						#print('testing order book', order_book[0].direction)
-						#self.reorder(order_book[0].direction)
+						self.reorder(order_book[0].direction)
 					else:
 						order_book.pop(0)
 
 					self.parse_order(order)
 				
 
-				# Incoming order's quantity is lower than existing order quantity
+				# Incoming order's quantity is lower or equal than existing order quantity
 				else:
 					print('CASE 3 MATCHING ICEBERG. PATH B')
 					print("Incoming order's quantity is LOWER or equal than existing order quantity")
+					print('INCOMING ORDER QUANTITY', order['order']['quantity'])
+					print('EXISTING ORDER QUANTITY', order_book[0].quantity)
+					print({'BuyOrderId': order_book[0].id,
+	    				  'SellOrderId': order['order']['id'],
+						  'price': order_book[0].price,
+						  'quantity': order['order']['quantity'] })
 					order_book[0].quantity = order_book[0].quantity - order['order']['quantity']
+					if order_book[0].quantity < order_book[0].peak:
+						order_book[0].peak = order_book[0].quantity
 					order_book[0].entry_time = datetime.now()
 					order['order']['quantity'] = 0
 					self.reorder(order_book[0].direction)
@@ -354,6 +437,7 @@ class IcebergOrder():
 		self.price = price
 		self.quantity = quantity
 		self.peak = peak
+		self.default_peak = peak
 		self.entry_time = datetime.now()
 		#print(self.direction, self.id, self.price, self.quantity, self.peak)
 
