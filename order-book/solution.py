@@ -116,58 +116,62 @@ class OrderBook():
 		else:
 			order_book = self.buy_orders
 		pass
-		matchable_order = order_book[0]
+		existing_order = order_book[0]
 		incoming_order_type = order['type']
-		matchable_order_type = matchable_order.type
+		existing_order_type = existing_order.type
 
 		# DISPATCHING
 		# Check if an incoming order is a Limit order
-		if incoming_order_type == 'Limit' and matchable_order_type in ['Limit', 'Iceberg']:
+		if incoming_order_type == 'Limit':
 			# Incoming order is a Limit Order. Matching with existing limit order in Case 1,
 			# and with an existing iceberg order in Case 2.
 		
 			# DISTINGUISH THE CASE
-			if matchable_order_type == 'Limit':
-				# MATCHING WITH LIMIT ORDER
-				if incoming_order['quantity'] > matchable_order.quantity:
-					#print('CASE 1. PATH A')
-					
-					matched_quantity = matchable_order.quantity
-					incoming_order['quantity'] = incoming_order['quantity'] - matched_quantity
-					
-					self.transactions_history.append(Transaction(matchable_order, incoming_order, matched_quantity))
+			# MATCHING WITH EXISTING LIMIT ORDER
+			if existing_order_type == 'Limit':
+				# 'CASE 1' - INCOMING LIMIT ORDER MATCHING WITH EXISTING LIMIT ORDER
+				if incoming_order['quantity'] > existing_order.quantity:
+					# 'CASE 1. PATH A.' - INCOMING ORDER'S QUANTITY IS HIGHER
+					# THAN THE EXISTING'S ORDER QUANTITY
 
+					# Update incoming order's quantity, add a transation to transaction
+					# history, remove the exhausted order from the order book,
+					# continue parsing the rest of the incoming order.
+					matched_quantity = existing_order.quantity
+					incoming_order['quantity'] = incoming_order['quantity'] - matched_quantity
+					self.transactions_history.append(Transaction(existing_order, incoming_order, matched_quantity))
 					order_book.pop(0)
 					self.parse_order(order)
-
-				# Incoming order's quantity is equal or lower than existing order quantity
 				else:
-					#print('CASE 1. PATH B')
-					#print('INCOMING ORDER QUANTITY', incoming_order['quantity'])
-					#print('EXISTING ORDER QUANTITY', matchable_order.quantity)
-					matched_quantity = incoming_order['quantity']
-					self.transactions_history.append(Transaction(matchable_order, incoming_order, matched_quantity))
+					# 'CASE 1. PATH B' INCOMING ORDER'S QUANTITY IS LOWER THAN
+					# EXISTING ORDER'S QUANTITY
 
-					matchable_order.quantity = matchable_order.quantity - incoming_order['quantity']
+					matched_quantity = incoming_order['quantity']
+					self.transactions_history.append(Transaction(existing_order, incoming_order, matched_quantity))
+					existing_order.quantity = existing_order.quantity - matched_quantity
 					incoming_order['quantity'] = 0
-					if matchable_order.quantity == 0:
+
+					# 'CASE 1. PATH C' INCOMING ORDER'S QUANTITY IS EQUAL TO EXISTING
+					# ORDER'S QUANTITY
+					if existing_order.quantity == 0:
 						order_book.pop(0)
 					return
+			# MATCHING WITH EXISTING LIMIT ORDER
 			else:
-				# MATCHING WITH ICEBERG ORDER
-				if incoming_order['quantity'] >= matchable_order.quantity:
-					#print('CASE 2. PATH A')
-					#print('CURRENT TOP ORDER', matchable_order.quantity, matchable_order.peak)
+				# 'CASE 2' - INCOMING LIMIT ORDER MATCHING WITH EXISTING ICEBERG ORDER
+				if incoming_order['quantity'] >= existing_order.quantity:
+					# 'CASE 1. PATH A.' - INCOMING ORDER'S QUANTITY IS HIGHER
+					# THAN THE EXISTING'S ORDER QUANTITY
 					
-					matched_quantity = min(matchable_order.peak, matchable_order.quantity)
+					matched_quantity = min(existing_order.peak, existing_order.quantity)
 					if matched_quantity != 0:
 
-						self.transactions_history.append(Transaction(matchable_order, incoming_order, matched_quantity))
+						self.transactions_history.append(Transaction(existing_order, incoming_order, matched_quantity))
 
 						incoming_order['quantity'] = incoming_order['quantity'] - matched_quantity
-						matchable_order.quantity = matchable_order.quantity - matched_quantity
-						matchable_order.entry_time = datetime.now()
-						self.reorder(matchable_order.direction)
+						existing_order.quantity = existing_order.quantity - matched_quantity
+						existing_order.entry_time = datetime.now()
+						self.reorder(existing_order.direction)
 					else:
 						order_book.pop(0)
 
@@ -175,51 +179,51 @@ class OrderBook():
 
 				# Incoming order's quantity is lower or equal than existing order quantity
 				else:
-					matched_quantity = min(matchable_order.peak,
+					matched_quantity = min(existing_order.peak,
 										   incoming_order['quantity'])
 					#print('CASE 2. PATH B')
 					#print('PEAK', matchable_order.peak)
 					#print('INCOMING ORDER QUANTITY', incoming_order['quantity'])
 					#print('EXISTING ORDER QUANTITY', matchable_order.quantity)
-					self.transactions_history.append(Transaction(matchable_order, incoming_order, matched_quantity))
+					self.transactions_history.append(Transaction(existing_order, incoming_order, matched_quantity))
 
 					
-					if incoming_order['quantity'] < matchable_order.peak:
-						matchable_order.peak = matchable_order.peak - matched_quantity
+					if incoming_order['quantity'] < existing_order.peak:
+						existing_order.peak = existing_order.peak - matched_quantity
 					else:
-						matchable_order.quantity = matchable_order.quantity - matched_quantity
-						matchable_order.peak = matchable_order.peak - matched_quantity
-					matchable_order.entry_time = datetime.now()
+						existing_order.quantity = existing_order.quantity - matched_quantity
+						existing_order.peak = existing_order.peak - matched_quantity
+					existing_order.entry_time = datetime.now()
 
 					incoming_order['quantity'] = incoming_order['quantity'] - matched_quantity
 					if incoming_order['quantity'] == 0:
-						if matchable_order.peak == 0:
-							matchable_order.peak = min(matchable_order.default_peak, matchable_order.quantity)
+						if existing_order.peak == 0:
+							existing_order.peak = min(existing_order.default_peak, existing_order.quantity)
 					
 						return
 					else:
-						if matchable_order.quantity < matchable_order.peak:
-							matchable_order.peak = matchable_order.quantity
-						if matchable_order.peak == 0:
-							matchable_order.peak = min(matchable_order.default_peak, matchable_order.quantity)
+						if existing_order.quantity < existing_order.peak:
+							existing_order.peak = existing_order.quantity
+						if existing_order.peak == 0:
+							existing_order.peak = min(existing_order.default_peak, existing_order.quantity)
 					
-						self.reorder(matchable_order.direction)
+						self.reorder(existing_order.direction)
 						self.parse_order(order)
 		else:
 			# Incoming order is an Iceberg Order
 			## CASE 3 AND 4: Matching incoming limit or iceberg order with existing iceberg order
 			# Incoming order's quantity is higher or equal than existing order quantity
-			if matchable_order_type == 'Limit':
-				if incoming_order['quantity'] > matchable_order.quantity:
+			if existing_order_type == 'Limit':
+				if incoming_order['quantity'] > existing_order.quantity:
 					#print('CASE 3 MATCHING LIMIT. PATH A')
 					#print("Incoming order's quantity is HIGHER or equal than existing order quantity")
-					matched_quantity = min(matchable_order.quantity, matchable_order.quantity)
+					matched_quantity = min(existing_order.quantity, existing_order.quantity)
 					if matched_quantity != 0:
-						self.transactions_history.append(Transaction(matchable_order, incoming_order, matched_quantity))
+						self.transactions_history.append(Transaction(existing_order, incoming_order, matched_quantity))
 
 						incoming_order['quantity'] = incoming_order['quantity'] - matched_quantity
-						matchable_order.quantity = matchable_order.quantity - matched_quantity
-						matchable_order.entry_time = datetime.now()
+						existing_order.quantity = existing_order.quantity - matched_quantity
+						existing_order.entry_time = datetime.now()
 					else:
 						order_book.pop(0)
 
@@ -231,26 +235,26 @@ class OrderBook():
 					#print('CASE 3 MATCHING LIMIT. PATH B')
 					#print("Incoming order's quantity is LOWER or equal than existing order quantity")
 					matched_quantity = incoming_order['quantity']
-					self.transactions_history.append(Transaction(matchable_order, incoming_order, matched_quantity))
+					self.transactions_history.append(Transaction(existing_order, incoming_order, matched_quantity))
 
-					matchable_order.quantity = matchable_order.quantity - incoming_order['quantity']
-					matchable_order.entry_time = datetime.now()
+					existing_order.quantity = existing_order.quantity - incoming_order['quantity']
+					existing_order.entry_time = datetime.now()
 					incoming_order['quantity'] = 0
-					self.reorder(matchable_order.direction)
+					self.reorder(existing_order.direction)
 			else:
-				if incoming_order['quantity'] > matchable_order.peak:
+				if incoming_order['quantity'] > existing_order.peak:
 					#print('CASE 4 MATCHING ICEBERG. PATH A')
 					#print("Incoming order's quantity is HIGHER or equal than existing order quantity")
-					matched_quantity = min(matchable_order.peak, matchable_order.quantity)
+					matched_quantity = min(existing_order.peak, existing_order.quantity)
 					if matched_quantity != 0:
-						self.transactions_history.append(Transaction(matchable_order, incoming_order, matched_quantity))
+						self.transactions_history.append(Transaction(existing_order, incoming_order, matched_quantity))
 
 						incoming_order['quantity'] = incoming_order['quantity'] - matched_quantity
-						matchable_order.quantity = matchable_order.quantity - matched_quantity
-						matchable_order.entry_time = datetime.now()
-						if matchable_order.quantity == 0:
+						existing_order.quantity = existing_order.quantity - matched_quantity
+						existing_order.entry_time = datetime.now()
+						if existing_order.quantity == 0:
 							order_book.pop(0)
-						self.reorder(matchable_order.direction)
+						self.reorder(existing_order.direction)
 					else:
 						order_book.pop(0)
 
@@ -262,14 +266,14 @@ class OrderBook():
 					#print('INCOMING ORDER QUANTITY', incoming_order['quantity'])
 					#print('EXISTING ORDER QUANTITY', matchable_order.quantity)
 					matched_quantity = incoming_order['quantity']
-					self.transactions_history.append(Transaction(matchable_order, incoming_order, matched_quantity))
+					self.transactions_history.append(Transaction(existing_order, incoming_order, matched_quantity))
 
-					matchable_order.quantity = matchable_order.quantity - incoming_order['quantity']
-					if matchable_order.quantity < matchable_order.peak:
-						matchable_order.peak = matchable_order.quantity
-					matchable_order.entry_time = datetime.now()
+					existing_order.quantity = existing_order.quantity - incoming_order['quantity']
+					if existing_order.quantity < existing_order.peak:
+						existing_order.peak = existing_order.quantity
+					existing_order.entry_time = datetime.now()
 					incoming_order['quantity'] = 0
-					self.reorder(matchable_order.direction)
+					self.reorder(existing_order.direction)
 
 	def __str__(self):
 		return f'Buy orders: {self.buy_orders}, Sell orders: {self.sell_orders}'
