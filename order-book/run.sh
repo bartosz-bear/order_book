@@ -10,10 +10,10 @@
 # but of course you should execute your code here.
 
 # MY SOLUTION
-
-python solution.py <&0 cat <<EOF
-{"type": "Iceberg", "order": {"direction": "Buy", "id": 1, "price": 14, "quantity": 20, "peak": 3}}
-{"type": "Iceberg", "order": {"direction": "Buy", "id": 2, "price": 14, "quantity": 20, "peak": 3}}
-{"type": "Iceberg", "order": {"direction": "Buy", "id": 3, "price": 14, "quantity": 20, "peak": 3}}
-{"type": "Iceberg", "order": {"direction": "Sell", "id": 4, "price": 14, "quantity": 80, "peak": 4}}
+#< ./tests/test2.in
+#< ../tests/4-2-3-1-AGGRESSIVE.in
+python3 solution.py <&0 cat <<EOF
+{"type":"Limit","order":{"direction":"Sell","id":1,"price":101,"quantity":20000}}
+{"type":"Limit","order":{"direction":"Sell","id":3,"price":100,"quantity":10000}}
+{"type":"Limit","order":{"direction":"Sell","id":4,"price":100,"quantity":7500}}
 EOF

@@ -135,6 +135,7 @@ class OrderBook():
 					#print('CASE 1. PATH B')
 					#print('INCOMING ORDER QUANTITY', incoming_order['quantity'])
 					#print('EXISTING ORDER QUANTITY', matchable_order.quantity)
+					matched_quantity = incoming_order['quantity']
 					self.transactions_history.append(Transaction(matchable_order, incoming_order, matched_quantity))
 
 					matchable_order.quantity = matchable_order.quantity - incoming_order['quantity']
@@ -218,6 +219,7 @@ class OrderBook():
 				else:
 					#print('CASE 2 MATCHING LIMIT. PATH B')
 					#print("Incoming order's quantity is LOWER or equal than existing order quantity")
+					matched_quantity = incoming_order['quantity']
 					self.transactions_history.append(Transaction(matchable_order, incoming_order, matched_quantity))
 
 					matchable_order.quantity = matchable_order.quantity - incoming_order['quantity']
@@ -248,6 +250,7 @@ class OrderBook():
 					#print("Incoming order's quantity is LOWER or equal than existing order quantity")
 					#print('INCOMING ORDER QUANTITY', incoming_order['quantity'])
 					#print('EXISTING ORDER QUANTITY', matchable_order.quantity)
+					matched_quantity = incoming_order['quantity']
 					self.transactions_history.append(Transaction(matchable_order, incoming_order, matched_quantity))
 
 					matchable_order.quantity = matchable_order.quantity - incoming_order['quantity']
@@ -275,7 +278,7 @@ class Transaction():
 		self.quantity = matched_quantity
 
 	def __str__(self):
-		return f'''{{"BuyOrderId": {self.buy_order_id}, "SellOrderId": {self.sell_order_id}, "quantity": {self.quantity}, "price": {self.price}}}'''
+		return f'''{{"buyOrderId": {self.buy_order_id}, "sellOrderId": {self.sell_order_id}, "price": {self.price},  "quantity": {self.quantity}}}'''
 
 
 class LimitOrder():
@@ -312,7 +315,7 @@ class IcebergOrder():
 		self.entry_time = datetime.now()
 
 	def __asjson__(self):
-		return {"id": self.id, "price": self.price, "quantity": self.quantity}
+		return {"id": self.id, "price": self.price, "quantity": self.peak}
 
 	def __str__(self):
 		return f'{{“id”: {self.id}, “price”: {self.price}, “quantity”: {self.peak}}}'
