@@ -24,7 +24,6 @@ class OrderBook():
 
 		# Are there any orders of the opposite direction in the book? If no, simply add
 		# order to the book.
-		#print('Debugging', order)
 		if order['order']['direction'] == 'Buy':
 			if not self.sell_orders:
 				self.add_order(order)
@@ -38,8 +37,7 @@ class OrderBook():
 		if self.immediate_fill_possible(order):
 			self.match_orders(order)
 		else:
-
-			# Immediate fill not possible. Enter to the book
+			# Immediate fill not possible. Enter incoming order to the book
 			self.add_order(order)
 
 
@@ -98,8 +96,19 @@ class OrderBook():
 
 
 	def match_orders(self, order):
+		"""
+		Main orders' matching engine. Responsible for matching and processing incoming orders
+		recursively until full quantity is matched and/or added to the order book.
 
-		# Defininng variables
+		Matching depends on the incoming and existing order type. There are 4 possible
+		matching possibilites:
+		CASE 1: Incoming Limit order matching existing Limit order
+		CASE 2: Incoming Limit order mathcing existing Iceberg order
+		CASE 3: Incoming Iceberg order matching existing Iceberg order
+		CASE 4: Incoming Iceberg order matching existing Limit order
+		"""
+
+		# Preparatory step: find out whether assign new values to improve brevity, 
 		order = order
 		incoming_order = order['order']
 		if incoming_order['direction'] == 'Buy':
@@ -108,14 +117,15 @@ class OrderBook():
 			order_book = self.buy_orders
 		pass
 		matchable_order = order_book[0]
-	
 		incoming_order_type = order['type']
 		matchable_order_type = matchable_order.type
 
+		# DISPATCHING
+		# Check if an incoming order is a Limit order
 		if incoming_order_type == 'Limit' and matchable_order_type in ['Limit', 'Iceberg']:
-			## CASE 1 and 4: Matching incoming limit or iceberg order with existing limit order
-			# Incoming order's quantity is higher than existing order quantity
-
+			# Incoming order is a Limit Order. Matching with existing limit order in Case 1,
+			# and with an existing iceberg order in Case 2.
+		
 			# DISTINGUISH THE CASE
 			if matchable_order_type == 'Limit':
 				# MATCHING WITH LIMIT ORDER
@@ -146,7 +156,7 @@ class OrderBook():
 			else:
 				# MATCHING WITH ICEBERG ORDER
 				if incoming_order['quantity'] >= matchable_order.quantity:
-					#print('CASE 4. PATH A')
+					#print('CASE 2. PATH A')
 					#print('CURRENT TOP ORDER', matchable_order.quantity, matchable_order.peak)
 					
 					matched_quantity = min(matchable_order.peak, matchable_order.quantity)
@@ -167,7 +177,7 @@ class OrderBook():
 				else:
 					matched_quantity = min(matchable_order.peak,
 										   incoming_order['quantity'])
-					#print('CASE 4. PATH B')
+					#print('CASE 2. PATH B')
 					#print('PEAK', matchable_order.peak)
 					#print('INCOMING ORDER QUANTITY', incoming_order['quantity'])
 					#print('EXISTING ORDER QUANTITY', matchable_order.quantity)
@@ -196,11 +206,12 @@ class OrderBook():
 						self.reorder(matchable_order.direction)
 						self.parse_order(order)
 		else:
-			## CASE 2 AND 3: Matching incoming limit or iceberg order with existing iceberg order
+			# Incoming order is an Iceberg Order
+			## CASE 3 AND 4: Matching incoming limit or iceberg order with existing iceberg order
 			# Incoming order's quantity is higher or equal than existing order quantity
 			if matchable_order_type == 'Limit':
 				if incoming_order['quantity'] > matchable_order.quantity:
-					#print('CASE 2 MATCHING LIMIT. PATH A')
+					#print('CASE 3 MATCHING LIMIT. PATH A')
 					#print("Incoming order's quantity is HIGHER or equal than existing order quantity")
 					matched_quantity = min(matchable_order.quantity, matchable_order.quantity)
 					if matched_quantity != 0:
@@ -217,7 +228,7 @@ class OrderBook():
 
 				# Incoming order's quantity is lower than existing order quantity
 				else:
-					#print('CASE 2 MATCHING LIMIT. PATH B')
+					#print('CASE 3 MATCHING LIMIT. PATH B')
 					#print("Incoming order's quantity is LOWER or equal than existing order quantity")
 					matched_quantity = incoming_order['quantity']
 					self.transactions_history.append(Transaction(matchable_order, incoming_order, matched_quantity))
@@ -228,7 +239,7 @@ class OrderBook():
 					self.reorder(matchable_order.direction)
 			else:
 				if incoming_order['quantity'] > matchable_order.peak:
-					#print('CASE 3 MATCHING ICEBERG. PATH A')
+					#print('CASE 4 MATCHING ICEBERG. PATH A')
 					#print("Incoming order's quantity is HIGHER or equal than existing order quantity")
 					matched_quantity = min(matchable_order.peak, matchable_order.quantity)
 					if matched_quantity != 0:
@@ -246,7 +257,7 @@ class OrderBook():
 					self.parse_order(order)
 				# Incoming order's quantity is lower or equal than existing order quantity
 				else:
-					#print('CASE 3 MATCHING ICEBERG. PATH B')
+					#print('CASE 4 MATCHING ICEBERG. PATH B')
 					#print("Incoming order's quantity is LOWER or equal than existing order quantity")
 					#print('INCOMING ORDER QUANTITY', incoming_order['quantity'])
 					#print('EXISTING ORDER QUANTITY', matchable_order.quantity)
