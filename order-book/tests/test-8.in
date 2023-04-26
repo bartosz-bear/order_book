@@ -1,3 +1,2 @@
-{"type": "Iceberg", "order": {"direction": "Buy", "id": 1, "price": 15, "quantity": 20, "peak": 10}}
-{"type": "Limit", "order": {"direction": "Buy", "id": 2, "price": 15, "quantity": 20}}
-{"type": "Limit", "order": {"direction": "Sell", "id": 3, "price": 15, "quantity": 30}}
+{"type":"Limit","order":{"direction":"Buy","id":1,"price":100,"quantity":100}}
+{"type":"Iceberg","order":{"direction":"Sell","id":1,"price":100,"quantity":50, "peak": 25}}

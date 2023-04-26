@@ -1,3 +1,0 @@
-{"buyOrders": [], "sellOrders": [{"id": 1, "price": 101, "quantity": 20000}]}
-{"buyOrders": [], "sellOrders": [{"id": 3, "price": 100, "quantity": 10000}, {"id": 1, "price": 101, "quantity": 20000}]}
-{"buyOrders": [], "sellOrders": [{"id": 3, "price": 100, "quantity": 10000}, {"id": 4, "price": 100, "quantity": 7500}, {"id": 1, "price": 101, "quantity": 20000}]}

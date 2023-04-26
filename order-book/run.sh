@@ -31,13 +31,18 @@
 
 #cat ./tests/test-1.in
 
-if [ "$1" = "test" ]; then
-  green='\e[0;32m'
-  white='\e[0;37m'
+test_cases=31
+lst=($(seq 1 $test_cases))
 
-  for i in $(seq 1 31);
+green='\e[0;32m'
+white='\e[0;37m'
+red='\e[0;31m'
+
+if [ "$1" = "tests" ]; then
+
+  for i in $(seq 1 12);
   do
-    echo "./tests/test-${i}.out"
+    echo "test-${i}"
     python3 solution.py < ./tests/test-${i}.in > ./tests/test-${i}.result
     if diff ./tests/test-${i}.out ./tests/test-${i}.result > /dev/null; then 
       echo -e "${green}Pass${white}"
@@ -46,11 +51,14 @@ if [ "$1" = "test" ]; then
     fi
   done
 
+elif [[  ${lst[*]} =~ "$1"  ]]; then
+  echo "test-$1"
+      python3 solution.py < ./tests/test-$1.in > ./tests/test-$1.result
+    if diff ./tests/test-$1.out ./tests/test-$1.result > /dev/null; then 
+      echo -e "${green}Pass${white}"
+    else
+      echo -e "${red}Fail${white}"
+    fi
 else
-  python3 solution.py < ./tests/test-31.in > ./tests/test-31.result
+  python3 solution.py <<< $1
 fi
-
-
-
-
-#MULTILINE COMMENT: start: : ' end: '

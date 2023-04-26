@@ -9,7 +9,7 @@ class OrderBook():
 	def __init__(self):
 		'''
 		OrderBook class collects orders in two sub order-books: 'buy_orders' book and 'sell_orders' book.
-		Transactions (at incoming order matching existing order) are collected in 'transactions_history' list.
+		Transactions (incoming order matching existing order) are collected in 'transactions_history' list.
 		'''
 		self.buy_orders = []
 		self.sell_orders = []
@@ -25,8 +25,8 @@ class OrderBook():
 		if order['order']['quantity'] == 0:
 			pass
 
-		# Are there any orders of the opposite direction in the book? If no, simply add
-		# order to the book.
+		# Empty order book case - Are there any orders of the opposite direction in the book?
+		# If no, simply add order to the book.
 		if order['order']['direction'] == 'Buy':
 			if not self.sell_orders:
 				self.add_order(order)
@@ -51,7 +51,6 @@ class OrderBook():
 		then it will be added to the appropriate sub order book.
 
 		Finally, the sub order book is refreshed.
-
 		'''
 
 		if order['type'] == 'Limit':
@@ -78,13 +77,14 @@ class OrderBook():
 			else:
 				self.sell_orders.append(order)
 
+		# Book refresh
 		self.reorder(order.direction)
 
 	def reorder(self, direction):
 		'''
-		Reorder sub order book by price and entry time. Sort buy order book by lowest price first,
-		and by most recent entry time second. Reorder sell order book by highest price first, and by the most
-		recent entry second.
+		Reorder sub order book by price and entry time. Sort buy order book by price in ascending order first,
+		and by most recent entry time second. Sort sell order book by price in ascending order first,
+		and by the most recent entry time second.
 		'''
 		if direction == 'Buy':
 			self.buy_orders.sort(key=lambda x: (-x.price, x.entry_time))
@@ -133,8 +133,7 @@ class OrderBook():
 		processing path.  
 		"""
 
-		# Preparatory step: find out whether assign new values to improve brevity, 
-		order = order
+		# Renaming variable for brevity
 		incoming_order = order['order']
 		if incoming_order['direction'] == 'Buy':
 			order_book = self.sell_orders
@@ -159,13 +158,10 @@ class OrderBook():
 					# 'CASE 1. PATH A.' - INCOMING ORDER'S QUANTITY IS HIGHER
 					# THAN THE EXISTING'S ORDER QUANTITY
 
-					# Update incoming order's quantity, add a transation to transaction
-					# history, remove the exhausted order from the order book,
-					# continue parsing the rest of the incoming order.
 					matched_quantity = existing_order.quantity
 					incoming_order['quantity'] = incoming_order['quantity'] - matched_quantity
 					self.transactions_history.append(Transaction(existing_order, incoming_order, matched_quantity))
-					#print(self.transactions_history[-1])
+					print(self.transactions_history[-1])
 					order_book.pop(0)
 					self.parse_order(order)
 				else:
@@ -174,6 +170,7 @@ class OrderBook():
 
 					matched_quantity = incoming_order['quantity']
 					self.transactions_history.append(Transaction(existing_order, incoming_order, matched_quantity))
+					print(self.transactions_history[-1])
 					existing_order.quantity = existing_order.quantity - matched_quantity
 					incoming_order['quantity'] = 0
 
@@ -193,7 +190,7 @@ class OrderBook():
 					if matched_quantity != 0:
 
 						self.transactions_history.append(Transaction(existing_order, incoming_order, matched_quantity))
-
+						print(self.transactions_history[-1])
 						incoming_order['quantity'] = incoming_order['quantity'] - matched_quantity
 						existing_order.quantity = existing_order.quantity - matched_quantity
 						
@@ -211,6 +208,7 @@ class OrderBook():
 					matched_quantity = min(existing_order.peak,
 										   incoming_order['quantity'])
 					self.transactions_history.append(Transaction(existing_order, incoming_order, matched_quantity))
+					print(self.transactions_history[-1])
 
 					# Updating incoming and existing order quantity
 					if incoming_order['quantity'] >= existing_order.peak:
@@ -248,7 +246,7 @@ class OrderBook():
 					matched_quantity = min(existing_order.quantity, existing_order.quantity)
 					if matched_quantity != 0:
 						self.transactions_history.append(Transaction(existing_order, incoming_order, matched_quantity))
-
+						print(self.transactions_history[-1])
 						incoming_order['quantity'] = incoming_order['quantity'] - matched_quantity
 						existing_order.quantity = existing_order.quantity - matched_quantity
 						existing_order.entry_time = datetime.now()
@@ -261,6 +259,7 @@ class OrderBook():
 					
 					matched_quantity = incoming_order['quantity']
 					self.transactions_history.append(Transaction(existing_order, incoming_order, matched_quantity))
+					print(self.transactions_history[-1])
 					existing_order.quantity = existing_order.quantity - incoming_order['quantity']
 					existing_order.entry_time = datetime.now()
 					incoming_order['quantity'] = 0
@@ -280,6 +279,7 @@ class OrderBook():
 
 					matched_quantity = min(existing_order.peak, existing_order.quantity)
 					self.transactions_history.append(Transaction(existing_order, incoming_order, matched_quantity))
+					print(self.transactions_history[-1])
 
 					incoming_order['quantity'] = incoming_order['quantity'] - matched_quantity
 					existing_order.quantity = existing_order.quantity - matched_quantity
@@ -296,6 +296,7 @@ class OrderBook():
 
 					matched_quantity = incoming_order['quantity']
 					self.transactions_history.append(Transaction(existing_order, incoming_order, matched_quantity))
+					print(self.transactions_history[-1])
 
 					existing_order.quantity = existing_order.quantity - incoming_order['quantity']
 					if existing_order.quantity < existing_order.peak:
@@ -307,14 +308,14 @@ class OrderBook():
 					self.reorder(existing_order.direction)
 
 	def __str__(self):
-		return f'Buy orders: {self.buy_orders}, Sell orders: {self.sell_orders}'
+		return f'Sell orders: {self.sell_orders}, Buy orders: {self.buy_orders}'
 
 class Transaction():
 
 	def __init__(self, matchable_order, incoming_order, matched_quantity):
 		'''
 		Object representing transaction which took place through match_order method of OrderBook class. 
-		Transaction is only possible if at least part of an incoming order's quantity was matched with an
+		Transaction is only executed if at least part of an incoming order's quantity was matched with an
 		existing order quantity.
 		'''
 
@@ -336,7 +337,7 @@ class LimitOrder():
 
 	type = 'Limit'
 
-	def __init__(self, type, direction, id, price, quantity):
+	def __init__(self, type: str, direction: str, id: int, price: int, quantity: int):
 		self.type = type
 		self.direction = direction
 		self.id = id
@@ -352,7 +353,7 @@ class IcebergOrder():
 
 	type = 'Iceberg'
 
-	def __init__(self, type, direction, id, price, quantity, peak):
+	def __init__(self, type: str, direction: str, id: int, price: int, quantity: int, peak: int):
 		self.type = type
 		self.direction = direction
 		self.id = id
@@ -372,8 +373,6 @@ if __name__ == "__main__":
 
 	for line in sys.stdin:
 		order_book.parse_order(json.loads(line))
-		print(json.dumps({"buyOrders": [o.as_json() for o in order_book.buy_orders],
-		    			  "sellOrders": [o.as_json() for o in order_book.sell_orders]}))
-		
-	for t in order_book.transactions_history:
-		print(t)
+		print(json.dumps({"sellOrders": [o.as_json() for o in order_book.sell_orders],
+		    			  "buyOrders": [o.as_json() for o in order_book.buy_orders]
+		    			  }))
