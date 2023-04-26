@@ -195,7 +195,7 @@ class OrderBook():
 
 						incoming_order['quantity'] = incoming_order['quantity'] - matched_quantity
 						existing_order.quantity = existing_order.quantity - matched_quantity
-
+						
 						existing_order.entry_time = datetime.now()
 						self.reorder(existing_order.direction)
 					else:
@@ -222,6 +222,8 @@ class OrderBook():
 					if incoming_order['quantity'] == 0:
 						if existing_order.peak == 0:
 							existing_order.peak = min(existing_order.default_peak, existing_order.quantity)
+							if existing_order.peak == 0:
+								order_book.pop(0)
 						return
 					else:
 						if existing_order.quantity < existing_order.peak:

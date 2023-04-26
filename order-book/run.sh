@@ -47,7 +47,7 @@ if [ "$1" = "test" ]; then
   done
 
 else
-  python3 solution.py < ./tests/test-19.in > ./tests/test-19.result
+  python3 solution.py < ./tests/test-26.in > ./tests/test-26.result
 fi
 
 
