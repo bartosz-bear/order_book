@@ -2,24 +2,3 @@
 {"buyOrders": [{"id": 1, "price": 14, "quantity": 3}, {"id": 2, "price": 14, "quantity": 3}], "sellOrders": []}
 {"buyOrders": [{"id": 1, "price": 14, "quantity": 3}, {"id": 2, "price": 14, "quantity": 3}, {"id": 3, "price": 14, "quantity": 3}], "sellOrders": []}
 {"buyOrders": [], "sellOrders": [{"id": 4, "price": 14, "quantity": 4}]}
-{"buyOrderId": 1, "sellOrderId": 4, "price": 14,  "quantity": 3}
-{"buyOrderId": 2, "sellOrderId": 4, "price": 14,  "quantity": 3}
-{"buyOrderId": 3, "sellOrderId": 4, "price": 14,  "quantity": 3}
-{"buyOrderId": 1, "sellOrderId": 4, "price": 14,  "quantity": 3}
-{"buyOrderId": 2, "sellOrderId": 4, "price": 14,  "quantity": 3}
-{"buyOrderId": 3, "sellOrderId": 4, "price": 14,  "quantity": 3}
-{"buyOrderId": 1, "sellOrderId": 4, "price": 14,  "quantity": 3}
-{"buyOrderId": 2, "sellOrderId": 4, "price": 14,  "quantity": 3}
-{"buyOrderId": 3, "sellOrderId": 4, "price": 14,  "quantity": 3}
-{"buyOrderId": 1, "sellOrderId": 4, "price": 14,  "quantity": 3}
-{"buyOrderId": 2, "sellOrderId": 4, "price": 14,  "quantity": 3}
-{"buyOrderId": 3, "sellOrderId": 4, "price": 14,  "quantity": 3}
-{"buyOrderId": 1, "sellOrderId": 4, "price": 14,  "quantity": 3}
-{"buyOrderId": 2, "sellOrderId": 4, "price": 14,  "quantity": 3}
-{"buyOrderId": 3, "sellOrderId": 4, "price": 14,  "quantity": 3}
-{"buyOrderId": 1, "sellOrderId": 4, "price": 14,  "quantity": 3}
-{"buyOrderId": 2, "sellOrderId": 4, "price": 14,  "quantity": 3}
-{"buyOrderId": 3, "sellOrderId": 4, "price": 14,  "quantity": 3}
-{"buyOrderId": 1, "sellOrderId": 4, "price": 14,  "quantity": 2}
-{"buyOrderId": 2, "sellOrderId": 4, "price": 14,  "quantity": 2}
-{"buyOrderId": 3, "sellOrderId": 4, "price": 14,  "quantity": 2}

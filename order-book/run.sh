@@ -35,7 +35,7 @@ if [ "$1" = "test" ]; then
   green='\e[0;32m'
   white='\e[0;37m'
 
-  for i in $(seq 1 19);
+  for i in $(seq 1 31);
   do
     echo "./tests/test-${i}.out"
     python3 solution.py < ./tests/test-${i}.in > ./tests/test-${i}.result
@@ -47,7 +47,7 @@ if [ "$1" = "test" ]; then
   done
 
 else
-  python3 solution.py < ./tests/test-26.in > ./tests/test-26.result
+  python3 solution.py < ./tests/test-31.in > ./tests/test-31.result
 fi
 
 

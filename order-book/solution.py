@@ -165,6 +165,7 @@ class OrderBook():
 					matched_quantity = existing_order.quantity
 					incoming_order['quantity'] = incoming_order['quantity'] - matched_quantity
 					self.transactions_history.append(Transaction(existing_order, incoming_order, matched_quantity))
+					#print(self.transactions_history[-1])
 					order_book.pop(0)
 					self.parse_order(order)
 				else:
@@ -264,6 +265,10 @@ class OrderBook():
 					existing_order.entry_time = datetime.now()
 					incoming_order['quantity'] = 0
 
+					# 'CASE 3. PATH C'
+					if existing_order.quantity == 0:
+						order_book.pop(0)
+
 					self.reorder(existing_order.direction)
 			
 			# MATCHING WITH EXISTING ICEBERG ORDER
@@ -296,6 +301,8 @@ class OrderBook():
 					if existing_order.quantity < existing_order.peak:
 						existing_order.peak = existing_order.quantity
 					existing_order.entry_time = datetime.now()
+					if existing_order.quantity == 0:
+						order_book.pop(0)
 
 					self.reorder(existing_order.direction)
 
