@@ -1,0 +1,4 @@
+{"sellOrders": [], "buyOrders": [{"id": 1, "price": 100, "quantity": 50}]}
+{"buyOrderId": 1, "sellOrderId": 1, "price": 100,  "quantity": 50}
+{"buyOrderId": 1, "sellOrderId": 1, "price": 100,  "quantity": 50}
+{"sellOrders": [{"id": 1, "price": 100, "quantity": 100}], "buyOrders": []}

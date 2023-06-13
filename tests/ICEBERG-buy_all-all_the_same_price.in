@@ -1,4 +1,0 @@
-{"type": "Iceberg", "order": {"direction": "Buy", "id": 1, "price": 14, "quantity": 20, "peak": 3}}
-{"type": "Iceberg", "order": {"direction": "Buy", "id": 2, "price": 14, "quantity": 20, "peak": 3}}
-{"type": "Iceberg", "order": {"direction": "Buy", "id": 3, "price": 14, "quantity": 20, "peak": 3}}
-{"type": "Iceberg", "order": {"direction": "Sell", "id": 4, "price": 14, "quantity": 80, "peak": 4}}
